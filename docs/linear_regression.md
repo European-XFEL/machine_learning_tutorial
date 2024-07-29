@@ -11,7 +11,8 @@ To achieve this, we need the three ingredients discussed in the Background secti
 
 
 ### The model
-The model is given by
+
+For now, let's restrict to linear functions of one variable. Linear means that the dependent variable, let's call it $x$, does not appear with a power larger than 1 (so not $x^2$ for example, and also not with negative powers or non-integer powers). The most general linear function of one variable is thus,
 $$
 y = f(x) = w\,x + b\,.
 $$
