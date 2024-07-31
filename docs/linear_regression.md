@@ -120,6 +120,17 @@ The parameter $\eta$ should be small (i.e., $\eta <1$) and is called the ==learn
 
 !!! example "Implement stochastic gradient descent"
 
-	```python
-	for ...
+	The following pseudocode is adapted from the SGD algorithm (8.1) from the [Deep Learning](https://www.deeplearningbook.org/) book by Goodfellow, Bengio, and Courville [see chapter 8, page 291]
+	```ruby
+	Require: learning rate, eta
+	Require: initial parameters, w and b
+	k = 1
+	while (do another epoch == True) do
+	    loop over minibatches
+	        compute loss function
+	        compute gradient of loss function: dloss_dw, dloss_db
+	        update parameters: w = w - eta * dloss_dw
+	                           b = b - eta * dloss_db
+	    k = k + 1
+	end while
 	```
