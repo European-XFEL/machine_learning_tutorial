@@ -122,8 +122,8 @@ The parameter $\eta$ should be small (i.e., $\eta <1$) and is called the ==learn
 
 	The following pseudocode is adapted from the SGD algorithm (8.1) from the [Deep Learning](https://www.deeplearningbook.org/) book by Goodfellow, Bengio, and Courville [see chapter 8, page 291]
 	```ruby
-	Require: learning rate, eta
-	Require: initial parameters, w and b
+	input: learning rate, eta
+	input: initial parameters, w and b
 	k = 1
 	while (do another epoch == True) do
 	    loop over minibatches
@@ -134,3 +134,65 @@ The parameter $\eta$ should be small (i.e., $\eta <1$) and is called the ==learn
 	    k = k + 1
 	end while
 	```
+
+## Putting it all together
+
+Okay so now we have the different pieces that we need to actually _do_ the regression. But first, we need some data. To have full control of the features (i.e., the _true_ underlying model) of this dataset, let's create some synthetic (artificial) data with `scikit-learn`.
+
+
+### Making a synthetic dataset
+
+```numpy
+from sklearn.datasets import make_regression
+
+features, targets, coef = make_regression(
+    n_samples=1000,
+    n_features=1,
+    n_targets=1,
+    bias=15,
+    noise=10,
+    coef=True
+)
+
+# NOTE: the X array returned by scipy.datasets.make_regression is not a 1d array
+#  even if n_features=1
+features = np.squeeze(features)
+```
+
+## Fit the parameters of the model and investigate you results
+
+Using SGD as described [above](#the-gradient-descent-algorithm), fit the parameters of the model and compare them with the parameters used to generate the dataset. 
+
+Here are a few things you should carefully consider (and **experiment** with!):
+
+<div class="annotate" markdown>
+ - The initial guesses for $w$ and $b$.
+ - The learning rate: a good starting value is something like 0.01 or 0.001 but play around and see what different values do.
+ - The number of training epochs. (1) Did you ask for too many or too few? How can you tell (see list below for hints).
+</div>
+1.  Epochs count how many times you use the entire dataset during training, i.e., how many times the outer loop of the SGD algorithm described above is executed.
+
+
+And here are a few things you should _definitely_ do:
+
+ - Plot the loss (at least `#!matplotlib plt.semilogy` or `#!matplotlib plt.loglog`) as a function of training steps (batches).
+    * Is it smooth or does have a lot of noise?
+    * Are there features like a "knee" where the behavior qualitatively changes?
+    * Did the loss reach an asymptotic value? If so, did the training continue for long after that?
+ - Plot the model parameters as function of training steps
+ - Plot the data (`#!python plt.scatter`) and the fitted model
+
+
+!!! info "Exact solution"
+
+    In this (simple) case, and with a bit of algebra, we can find a closed form solution for the parameters $w$ and $b$. The loss function here is strictly convex and thus has a unique minimum. The solution can be found by solving the linear set of equations $\nabla\mathcal{L}=\vec{0}$ and is given by,
+
+    \begin{equation*}
+    w = \frac{\mathrm{cov}(X, T)}{
+      \mathrm{var}\,X
+    }\,,\qquad
+    b = \overline{T} - w\,\overline{X}\,.
+    \end{equation*}
+
+    The captial letters mean the full vector of features, $x$, and targets, $t$, in the dataset. The operators $\mathrm{cov}$ and $\mathrm{var}$ are the covariance and variance respectively. They can be computed with the `numpy` functions `cov` and `var`. Finally, an overline as in $\overline{X}$ means the average (`numpy.mean`) over the features in the datasets and similarly for the targets.
+
