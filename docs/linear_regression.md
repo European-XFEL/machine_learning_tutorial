@@ -243,7 +243,7 @@ Denoting the estimators for $w$ and $b$ by $\hat{w}$ and $\hat{b}$, their (co)va
     \begin{equation*}
     \begin{split}
     \mathrm{var}\,\hat{w} &= \frac{1}{N-1}\sum_i^N (y_i-t_i)^2\times
-      \frac{1}{\mathrm{var}\,X}\left(\mathrm{var}\,X - \overline{X}^2\right)\,,\\
+      \frac{1}{\mathrm{var}\,X}\left(\mathrm{var}\,X + \overline{X}^2\right)\,,\\
     \mathrm{var}\,\hat{b} &= \frac{1}{N-1}\sum_i^N (y_i-t_i)^2\times
        \frac{1}{\mathrm{var}\,X}\,,\\
     \mathrm{cov}(\hat{w}, \hat{b}) &= \frac{-1}{N-1}\sum_i^N (y_i-t_i)^2\times
