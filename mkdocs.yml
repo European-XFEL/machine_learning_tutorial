@@ -34,6 +34,7 @@ theme:
 nav:
   - Home: index.md
   - Warm-up: linear_regression.md
+  - Neural networks: neural_networks.md
 
 plugins:
   - search
