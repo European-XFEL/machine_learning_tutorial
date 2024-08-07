@@ -101,7 +101,7 @@ J = loss(y, t)
 
 ### Backpropagation
 
-What is backpropagation? See this article from [IBM](https://www.ibm.com/think/topics/backpropagation), for example. The [Wikipedia]() article is quite detailed but also very technical.
+What is backpropagation? See this article from [IBM](https://www.ibm.com/think/topics/backpropagation), for example. The [Wikipedia](https://en.wikipedia.org/wiki/Backpropagation) article is quite detailed but also very technical.
 
 The pseudocode below closely follows Algorithm 6.4 in [Goodfellow-et-al-2016].
 
