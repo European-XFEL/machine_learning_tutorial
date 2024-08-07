@@ -125,7 +125,7 @@ g = ∇<sub>y</sub>J (grad_y_loss)
    <span style="color:gray"># Compute the gradients on the weight matrices and bias vectors</span>
    grad_bk_loss = g
    <span style="color:gray"># ⊗ means outer product, np.outer</span>
-   grad_Wk_loss = g ⊗ h<sup>(k-1)</sup>
+   grad_Wk_loss = h<sup>(k-1)</sup> ⊗ g
    <span style="color:gray"># Here W is a matrix and g is a vector so use np.matmul
    # This step propagates the gradient to the layer below (k-1)</span>
    g = W<sup>(k)</sup>g
