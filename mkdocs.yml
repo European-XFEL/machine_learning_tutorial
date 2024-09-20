@@ -40,7 +40,6 @@ nav:
   - Linear Regression:
     - linreg/index.md
     - Closed-form solution: linreg/closed_form.md
-  - Warm-up: linear_regression.md
   - Neutral Networks:
     - nnets/index.md 
     - The neural network class: nnets/neural_networks.md
