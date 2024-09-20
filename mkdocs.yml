@@ -30,11 +30,21 @@ theme:
   features:
     - content.code.select
     - content.code.copy
+    - navigation.indexes
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.footer
 
 nav:
   - Home: index.md
+  - Linear Regression:
+    - linreg/index.md
+    - Closed-form solution: linreg/closed_form.md
   - Warm-up: linear_regression.md
-  - Neural networks: neural_networks.md
+  - Neutral Networks:
+    - nnets/index.md 
+    - The neural network class: nnets/neural_networks.md
+    - Testing with a simple dataset: nnets/neural_network_testing.md
 
 plugins:
   - search
@@ -43,6 +53,7 @@ markdown_extensions:
   - admonition
   - attr_list
   - footnotes
+  - tables
   - md_in_html
   - pymdownx.arithmatex:
       generic: true
