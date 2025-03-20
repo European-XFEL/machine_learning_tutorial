@@ -36,7 +36,7 @@ The purpose of the loss function is to tell us "how well" we are able model the 
 
 A common loss function in regression is the Mean-Squared Error (MSE) which is given by
 $$
-\mathcal{L} = \frac{1}{N}\sum_{i=1}^N \left(y_i - t_i\right)^2\,,
+\mathcal{L} = \frac{1}{N}\sum_{i=1}^N \left(y_i - t_i\right)^2 = \frac{1}{N}\sum_{i=1}^N \left(f(x_i) - t_i\right)^2\,,
 $$
 where $N$ is the number of $(x,t)$, i.e. (feature, target), pairs in the dataset and $y$ is the output of the model. (Technically, this is the expectation of the loss, $\mathbb{E}\left[\mathcal{L}\right]$.)
 This loss function arises naturally if the underlying variation in the data is Gaussian which in many cases is a good assumption. However, one drawback of MSE loss is that it is sensitive to "outliers" in the data. We will examine this in more detail later and discuss possible mitigation strategies.
