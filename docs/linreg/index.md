@@ -12,7 +12,8 @@ To achieve this, we need the three ingredients discussed in the Background secti
 
 ### The model
 
-For now, let's restrict to linear functions of one variable. Linear means that the dependent variable, let's call it $x$, does not appear with a power larger than 1 (so not $x^2$ for example, and also not with negative powers or non-integer powers). The most general linear function of one variable is thus,
+For now, let's restrict to linear functions of one variable. 
+By which we mean a polynomial whose variable, let's call it $x$, does not appear with with powers larger than 1 (so the polynomial does not contain terms with $x^2$, $x^3$ etc.). The most general linear function of one variable is thus,
 $$
 y = f(x) = w\,x + b\,.
 $$
@@ -23,13 +24,37 @@ This model has 2 ==parameters==, the slope $w$ and the offset $b$. Our task is t
 	```python
 	import numpy as np
 	
-	def fx(x: np.ndarray, a: float, b: float) -> np.ndarray:
+	def fx(x: np.ndarray, w: float, b: float) -> np.ndarray:
 	
 	    y = ...
 
 	    return y	
 	```
-
+??? info "Math comment: Definition Polynomials"
+    For us, a polynomial in a single variable is a function $f$ that takes a real number as argument and returns a real number (in short $f:\mathbb{R}\rightarrow\mathbb{R}$) of the from 
+	$$ f(x) = a_0+a_1 x+a_2 x^2 + \ldots + a_n x^n = \sum_{i=0}^n a_i x^i $$ 
+	with $n\in\mathbb{N}$ and $a_i \in \mathbb{R}$ (the symbol "$\in$" means "is element of").
+	
+??? info "Math comment: Different notions of linearity"
+    The definition of a *linear function* as given above describes arbitrary straight lines and is usually formulated in the subfield of [analysis](https://en.wikipedia.org/wiki/Mathematical_analysis). In [linear algebra](https://en.wikipedia.org/wiki/Linear_algebra) and the general field of [algebra](https://en.wikipedia.org/wiki/Algebra) a different notion of linarity is used. Here a function $f:\mathbb{R}\rightarrow \mathbb{R}$ is called linear if and only if	
+	$$ f(\alpha x) = \alpha f(x) \quad \text{and} \quad  f(x+y) = f(x) + f(y) \quad \forall \alpha,x,y\in\mathbb{R}\,, $$
+	were " $ \forall $ " is the math symbol of "for all".  
+	According to this definition our line from above ($f(x) = wx+b$) is not linear, can you see why?
+	In algebra one would call such a map *affine linear* or simply *affine* but this notion goes beyond our little introduction.
+	
+	
+??? question "Math side quest (optional!)"
+	Proof the following statement:  
+	Any algebraically linear function in one variable (see above definition) has the form 
+	$$ f(x)=ax \quad \text{for a unique } a\in\mathbb{R} $$ 
+	Hints:
+	
+	1. You have to use the properties of the difinition of linear functions. 
+	2. You need to show both existance and uniqueness of such an $a$.
+	3. Uniqunes proofs usually go as follows:
+		- Assume ther exists another $a'$ that satisfies the above (i.e. f(x) = x a')
+		- show that then $a'=a$ and therfore $a$ must be unique.
+	4. If you have found a correct proof you can write either "q.e.d." (short for the latin "*quod erat demonstrandum*" that means "Which was to be proved/Was zu zeigen war") or the more modern " $ \square $ " at the bottom right corner to signal that the proof is finished.
 ### Loss function
 
 The purpose of the loss function is to tell us "how well" we are able model the data for particular values of the parameters. The better the model describes the data, the smaller the loss ought to be.
@@ -38,13 +63,13 @@ A common loss function in regression is the Mean-Squared Error (MSE) which is gi
 $$
 \mathcal{L} = \frac{1}{N}\sum_{i=1}^N \left(y_i - t_i\right)^2 = \frac{1}{N}\sum_{i=1}^N \left(f(x_i) - t_i\right)^2\,,
 $$
-where $N$ is the number of $(x,t)$, i.e. (feature, target), pairs in the dataset and $y$ is the output of the model. (Technically, this is the expectation of the loss, $\mathbb{E}\left[\mathcal{L}\right]$.)
+where $N$ is the number of $(x,t)$, i.e. (feature, target), pairs in the dataset and $y$ is the output of the model. (Technically, this is a measure for the expected value of the loss, $\mathbb{E}\left[\mathcal{L}\right]$.)
 This loss function arises naturally if the underlying variation in the data is Gaussian which in many cases is a good assumption. However, one drawback of MSE loss is that it is sensitive to "outliers" in the data. We will examine this in more detail later and discuss possible mitigation strategies.
 
 !!! example "Implement the loss function"
 
 	```python
-	def loss(x: np.ndarray, t: np.ndarray, a: float, b: float) -> float:
+	def loss(x: np.ndarray, t: np.ndarray, w: float, b: float) -> float:
 	    """Compute the MSE loss and return it
 	    """
 
@@ -52,7 +77,41 @@ This loss function arises naturally if the underlying variation in the data is G
 
 	    return mse_loss
 	```
+??? info "Math comment: Expected values, sample mean & probability density"
+	The notion of expected value belongs to the field of [probability theory](https://en.wikipedia.org/wiki/Probability_theory).  
+	Suppose you conduct an experiment whose outcome is described by a vairable $X$ which can only be in one of two states, say $x_1$ or $x_2$ and let $p_1$, $p_2$ be the probabilities with which $X$ attains these values (e.g. think of a fair coin toss where we set $X=0$ for "tails", $X=1$ for "heads" and $p_1=p_2=\frac{1}{2}$), then the *expected value* $\mathbb{E}(X)$ of $X$ is given by
+	$$ \mathbb{E}(X) = x_1 p_1 + x_2 p_2 $$
+	
+	In such a setting $X$ is called a *random variable*.  
+	By repeatedly measuring outcomes of this experiment we can estimate the true expectation value using the *sample mean*.
+	Assume we conducted $N$ experiments whose outcomes are given by $X_1,\ldots,X_N$ the *sample mean* is then defined by
+	$$ \frac{1}{N}\sum_1^N X_i \approx \mathbb{E}(X)$$ 
+	If you look back at the definition of the loss function from above you can see that it has the form of a sample mean and therfore is a measure for the expected value of the squared difference between the model value at the given features $f(x_i)$ and the targests $t_i$.  
+	
+	The definition of the *expectated value* given above can be directly generalized to the case where $X$ can be in finitely many different states.  
+	Trick question, in how many possible states can our loss function be ? (maybe pause a bit and think about it.)  
+	We are cutting corners here a bit, in order to properly introuce *expected values* for our case we would need [measures](https://en.wikipedia.org/wiki/Measure_(mathematics))/[integrals](https://en.wikipedia.org/wiki/Integral). These would allow us to assing probabilities to arbitrary collections of loss function values. One way of doing this goes via a *probability density functions* an example of which can be seen below:
+	<figure markdown="span">
+	![Image title](../figures/gaussian.png){ width="600" }
+	<figcaption></figcaption>
+	</figure>
+	 On the x-axis are all possible values for the random variable $X$, i.e. all real numbers. The probability with which $X$ takes a value in the interval $[a,b]$ (i.e. the probability for $a\leq X \leq b$) is given by the area that lies under the curve of the *probability density* in the same interval. In the above example X takes values in [0,1] with a probability of $34.1$%.
+	
+??? info "Math comment: Gaussians"
+	A Gaussian is a specific *probability distribution*, tn fact, the probability density shown in the example above is a Gaussian probability distribution. Gaussian probability distributions are extreamly common in nature and everywhere around you, this is because of the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers).  
+	It states that whenever you have many intependent random variables, say $X_1, \ldots X_n$, then the probability distribution 
+	of their sample mean $\frac{1}{n}(X_1 + \ldots + X_n)$ becomes arbitrary close to a Gaussian for increasing $n$.
+	
+	One consequence of this is that whenever you perform repeated random experiments the sample mean of $n$ such experiments, thought of as a random variable itself, can be better and better approximated by a Gaussian probbility distribution the higher $n$ becomes. 
+	
+	Example insuracnes:
+	The more people buy a particular insurance the better the average number of insurance cases per year can be described by a Gaussian probability distribution.
 
+	
+	
+
+	
+	
 
 ### Optimization
 
@@ -87,7 +146,7 @@ Back to our loss function and its gradient. The `loss_gradient` function will ha
 !!! example "Implement the gradient of the loss function"
 
 	```python
-	def loss_gradient(x: np.ndarray, t: np.ndarray, a: float, b: float) -> tuple[float, float]:
+	def loss_gradient(x: np.ndarray, t: np.ndarray, w: float, b: float) -> tuple[float, float]:
 	    """Compute the gradien of the loss function
 	    """
 
@@ -121,19 +180,27 @@ The parameter $\eta$ should be small (i.e., $\eta <1$) and is called the ==learn
 !!! example "Implement stochastic gradient descent"
 
 	The following pseudocode is adapted from the SGD algorithm (8.1) from the [Deep Learning](https://www.deeplearningbook.org/) book by Goodfellow, Bengio, and Courville [see chapter 8, page 291]
-	```ruby
-	input: learning rate, eta
-	input: initial parameters, w and b
-	k = 1
-	while (do another epoch == True) do
-	    loop over minibatches
-	        compute loss function
-	        compute gradient of loss function: dloss_dw, dloss_db
-	        update parameters: w = w - eta * dloss_dw
-	                           b = b - eta * dloss_db
-	    k = k + 1
-	end while
+	```pseudocode
+	\begin{algorithm}
+	\begin{algorithmic}
+	\STATE $\text{\textbf{input :}}$ $\text{learning rate}$, $\eta$
+	\STATE $\text{\textbf{input :}}$ $\text{initial parameters}$, $w \text{ and } b$ 
+	\PROCEDURE{Stochastic gradient descent}{$\eta, w, b$}
+		\STATE $k = 1$
+		\WHILE{do_another_epoch == True}
+			\FOR{batch in minibatches}
+				\STATE compute loss function
+				\STATE compute gradient of loss function: $\frac{\partial\mathcal{L}}{\partial w},\frac{\partial\mathcal{L}}{\partial b}$
+				\STATE update parameters: $w = w - \eta\, \frac{\partial\mathcal{L}}{\partial w}$
+				\STATE $\quad\quad\quad\quad\quad\quad\quad\quad b \,= b - \eta\, \frac{\partial\mathcal{L}}{\partial b}$				
+			\ENDFOR
+			\STATE update $\mathrm{do\_another\_epoch}$
+			\STATE $k = k+1$
+		\ENDWHILE
+	\end{algorithmic}
+	\end{algorithm}
 	```
+
 
 ## Putting it all together
 
@@ -142,24 +209,58 @@ Okay so now we have the different pieces that we need to actually _do_ the regre
 
 ### Making a synthetic dataset
 
-```numpy
+```python
 from sklearn.datasets import make_regression
-
-features, targets, coef = make_regression(
-    n_samples=1000,
+seed = 73022375
+n_samples = 10000
+np.random.seed(seed)
+b_true = (np.random.rand()-0.5)*2
+features, targets, w_true = make_regression(
+    random_state=seed,
+    n_samples=n_samples,
     n_features=1,
     n_targets=1,
-    bias=15,
-    noise=10,
+    bias=b_true,
+    noise=20,
     coef=True
 )
-
-# NOTE: the X array returned by scipy.datasets.make_regression is not a 1d array
-#  even if n_features=1
+# NOTE: the X array returned by scipy.datasets.make_regression is not a 1d array  even if n_features=1
 features = np.squeeze(features)
+#Note: By default w_true is sampled in the range (0,100) lets rescale that to the range (0,1)
+targets = (targets-b_true)/100+b_true
+w_true/=100
 ```
+You can plot the resulting dataset via
+```python
+from matplotlib import pyplot as plt
+#Load a colormap
+cmap = plt.get_cmap('viridis')
+cmap.set_under('white')
 
-## Fit the parameters of the model and investigate you results
+#Plot data histogram
+fig,ax = plt.subplots()
+hist = ax.hist2d(features,targets,bins=int(np.sqrt(n_samples)),cmap=cmap,vmin=1)
+cbar = fig.colorbar(hist[-1])
+cbar.set_label('counts')
+
+#Plot true linear model
+xs = np.linspace(features.min()*1.2,features.max()*1.2)
+ax.plot(xs,fx(xs,w_true,b_true),color = 'red')
+
+#Set aspect ration and axis limits and labels
+ax.set_aspect('equal')
+ax.set_xlabel('feature value')
+ax.set_ylabel('target value')
+ax.set_xlim((-4,4))
+ax.set_ylim((-4,4))
+```
+<figure markdown="span">
+  ![Image title](../figures/dataset.png){ width="600" }
+  <figcaption>Take a moment and check if you understand what is illustrated here.</figcaption>
+</figure>
+
+
+## Fit the parameters of the model and investigate your results
 
 Using SGD as described [above](#the-gradient-descent-algorithm), fit the parameters of the model and compare them with the parameters used to generate the dataset. 
 

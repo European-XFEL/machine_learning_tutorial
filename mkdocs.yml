@@ -47,7 +47,7 @@ nav:
 
 plugins:
   - search
-
+  - pseudocode
 markdown_extensions:
   - admonition
   - attr_list
@@ -77,5 +77,5 @@ extra_javascript:
 extra_css:
   - stylesheets/extra.css
   - https://unpkg.com/katex@0/dist/katex.min.css  
-
+  - stylesheets/pseudo-code.css
 
